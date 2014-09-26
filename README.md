@@ -32,7 +32,7 @@ ENGINE = INNODB;
 - mvn exec:java
 
 
-NB: If you want to test a 2-node cluster, increase os settings:
+**EXTRA: If you want to test a 2-node cluster, increase os settings:**
 
 - edit **/etc/sysctl.conf**  
 ```  
