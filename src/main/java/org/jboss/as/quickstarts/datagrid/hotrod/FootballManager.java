@@ -18,11 +18,7 @@ package org.jboss.as.quickstarts.datagrid.hotrod;
 
 import java.io.Console;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -39,7 +35,8 @@ public class FootballManager {
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_GREEN = "\u001B[32m";
     private static final String JDG_HOST = "jdg.host";
-    private static final String HOTROD_PORT = "jdg.hotrod.port";
+    private static final String HOTROD_PORT_1 = "jdg.hotrod.port.1";
+    private static final String HOTROD_PORT_2 = "jdg.hotrod.port.2";
     private static final String I_7_NANI = "jdg.7nani";
     private static final String PROPERTIES_FILE = "jdg.properties";
     private static final String msgTeamMissing = "The specified team \"%s\" does not exist, choose next operation\n";
@@ -54,7 +51,8 @@ public class FootballManager {
             + "ar  -  add a residential user\n" + "arm  -  add a residential mortal user\n"
             + "rr  -  remove a residential user\n" + "rR  -  remove all residentials users\n"
             + "pr  -  print a residential user\n" + "pR  -  print all residential users\n"
-            + "p   -  print all teams and players\n"+ "nani  -  add 7 nani \n" + "q   -  quit\n";
+            + "p   -  print all teams and players\n"+ "nani  -  add 7 nani \n"
+            + "k  -  print keyset \n" + "q   -  quit\n";
     private static final String teamsKey = "teams";
 
     private Console con;
@@ -67,7 +65,11 @@ public class FootballManager {
         ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.addServer()
               .host(jdgProperty(JDG_HOST))
-              .port(Integer.parseInt(jdgProperty(HOTROD_PORT)));
+              .port(Integer.parseInt(jdgProperty(HOTROD_PORT_1)));
+        builder.addServer()
+                .host(jdgProperty(JDG_HOST))
+                .port(Integer.parseInt(jdgProperty(HOTROD_PORT_2)));
+
         cacheManager = new RemoteCacheManager(builder.build());
         cache = cacheManager.getCache("teams");
         cacheResidential = cacheManager.getCache("residentials");
@@ -278,6 +280,16 @@ public class FootballManager {
         }
     }
 
+    public void printKeySet() {
+        @SuppressWarnings("unchecked")
+        Set<String> usersIds = (Set<String>) cacheResidential.keySet();
+        Iterator<String> it = usersIds.iterator();
+        while (usersIds!=null && it.hasNext()){
+            con.printf(it.next()+"\n");
+        }
+        con.printf("Keyset size: " + String.valueOf(usersIds.size()) + "\n");
+    }
+
     public void stop() {
         cacheManager.stop();
     }
@@ -319,6 +331,8 @@ public class FootballManager {
                 manager.massiveResidentialInsert(false);
             } else if ("help".equals(action)) {
                 con.printf(initialPrompt);
+            } else if ("k".equals(action)) {
+                manager.printKeySet();
             } else if ("q".equals(action)) {
                 manager.stop();
                 break;

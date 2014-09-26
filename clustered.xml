@@ -178,7 +178,7 @@
 				
 				<distributed-cache name="residentials" start="EAGER" mode="SYNC">
 
-					<eviction strategy="LRU" max-entries="5"/>
+					<eviction strategy="LRU" max-entries="1000"/>
 					<!-- Define the locking isolation of this cache -->
 					<locking
 						isolation="READ_COMMITTED"
@@ -190,7 +190,7 @@
 					<transaction mode="NONE" />
 
 					
-					<string-keyed-jdbc-store datasource="java:/MyVodafoneCacheStoreDS" shared="true" fetch-state="false" passivation="true" preload="true" purge="false">
+					<string-keyed-jdbc-store datasource="java:/MyVodafoneCacheStoreDS" shared="true" fetch-state="false" passivation="true" preload="false" purge="false">
 						
 						<string-keyed-table prefix="JDG">
 							<id-column name="id" type="VARCHAR"/>
